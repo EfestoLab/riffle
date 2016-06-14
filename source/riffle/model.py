@@ -194,12 +194,11 @@ class Directory(Item):
 
         # List paths under this directory.
         paths = []
-
-        if not os.access(self.path, os.R_OK):
+        try:
+            for name in os.listdir(self.path):
+                paths.append(os.path.normpath(os.path.join(self.path, name)))
+        except (OSError, WindowsError) as error:
             return children
-
-        for name in os.listdir(self.path):
-            paths.append(os.path.normpath(os.path.join(self.path, name)))
 
         # Handle collections.
         collections, remainder = clique.assemble(
