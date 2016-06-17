@@ -4,11 +4,13 @@
 
 import os
 from datetime import datetime
-
+from PySide import QtCore
 from PySide.QtCore import Qt, QAbstractItemModel, QModelIndex, QDir
 from PySide.QtGui import QSortFilterProxyModel
 import clique
 
+class PermissionError(Exception):
+    pass
 
 def ItemFactory(path):
     '''Return appropriate :py:class:`Item` instance for *path*.
@@ -198,7 +200,7 @@ class Directory(Item):
             for name in os.listdir(self.path):
                 paths.append(os.path.normpath(os.path.join(self.path, name)))
         except (OSError, WindowsError) as error:
-            return children
+            raise PermissionError(error)
 
         # Handle collections.
         collections, remainder = clique.assemble(
@@ -281,7 +283,7 @@ class Collection(Item):
 
 class Filesystem(QAbstractItemModel):
     '''Model representing filesystem.'''
-
+    permission_error = QtCore.Signal(object)
     ITEM_ROLE = Qt.UserRole + 1
 
     def __init__(self, path='', parent=None, iconFactory=None):
@@ -416,7 +418,6 @@ class Filesystem(QAbstractItemModel):
             return item
 
         elif role == Qt.DisplayRole:
-
             if column == 0:
                 return item.name
             elif column == 1:
@@ -483,7 +484,11 @@ class Filesystem(QAbstractItemModel):
 
         if item.canFetchMore():
             startIndex = len(item.children)
-            additionalChildren = item.fetchChildren()
+            try:
+                additionalChildren = item.fetchChildren()
+            except PermissionError as error:
+                self.permission_error.emit(error)
+            
             endIndex = startIndex + len(additionalChildren) - 1
             if endIndex >= startIndex:
                 self.beginInsertRows(index, startIndex, endIndex)

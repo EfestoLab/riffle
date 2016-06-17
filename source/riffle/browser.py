@@ -67,6 +67,8 @@ class FilesystemBrowser(QtGui.QDialog):
         model = riffle.model.Filesystem(
             path=self._root, parent=self, iconFactory=self._iconFactory
         )
+        model.permission_error.connect(self.on_permission_error)
+
         proxy.setSourceModel(model)
         proxy.setDynamicSortFilter(True)
 
@@ -86,6 +88,14 @@ class FilesystemBrowser(QtGui.QDialog):
         self._footerLayout.addWidget(self._acceptButton)
 
         self.layout().addLayout(self._footerLayout)
+
+    def on_permission_error(self, error):
+        m = QtGui.QMessageBox.warning(self, 
+            "permission problems",
+            error,
+            QMessageBox.Cancel
+        )
+        m.show()
 
     def _postConstruction(self):
         '''Perform post-construction operations.'''
