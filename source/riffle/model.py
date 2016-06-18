@@ -10,13 +10,13 @@ from PySide.QtCore import Qt, QAbstractItemModel, QModelIndex, QDir
 from PySide.QtGui import QSortFilterProxyModel
 import clique
 
-# WindowsError do not exist under Linux therefore we need to check in advance 
-# on which platform we are in...
+
+# WindowsError do not exist under Linux
 try:
-    OSException = WindowsError
+    _OSException = WindowsError
 
 except NameError as e:
-    OSException = OSError
+    _OSException = OSError
 
 
 class PermissionError(Exception):
@@ -211,7 +211,7 @@ class Directory(Item):
             for name in os.listdir(self.path):
                 paths.append(os.path.normpath(os.path.join(self.path, name)))
 
-        except OSException as error:
+        except _OSException as error:
             raise PermissionError(error)
 
         # Handle collections.
