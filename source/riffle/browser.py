@@ -90,9 +90,9 @@ class FilesystemBrowser(QtGui.QDialog):
         self.layout().addLayout(self._footerLayout)
 
     def on_permission_error(self, error):
-        m = QtGui.QMessageBox().warning(
+        self.m = QtGui.QMessageBox().warning(
             self,
-            "permission problems",
+            "Permission problems",
             str(error),
             QtGui.QMessageBox.Cancel
         )

@@ -500,7 +500,8 @@ class Filesystem(QAbstractItemModel):
                 additionalChildren = item.fetchChildren()
             except PermissionError as error:
                 self.permission_error.emit(error)
-            
+                additionalChildren = []
+
             endIndex = startIndex + len(additionalChildren) - 1
             if endIndex >= startIndex:
                 self.beginInsertRows(index, startIndex, endIndex)
