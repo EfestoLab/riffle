@@ -3,14 +3,25 @@
 # :license: See LICENSE.txt.
 
 import os
+import sys
 from datetime import datetime
 from PySide import QtCore
 from PySide.QtCore import Qt, QAbstractItemModel, QModelIndex, QDir
 from PySide.QtGui import QSortFilterProxyModel
 import clique
 
+# WindowsError do not exist under Linux therefore we need to check in advance 
+# on which platform we are in...
+try:
+    OSException = WindowsError
+
+except NameError as e:
+    OSException = OSError
+
+
 class PermissionError(Exception):
     pass
+
 
 def ItemFactory(path):
     '''Return appropriate :py:class:`Item` instance for *path*.
@@ -199,7 +210,8 @@ class Directory(Item):
         try:
             for name in os.listdir(self.path):
                 paths.append(os.path.normpath(os.path.join(self.path, name)))
-        except (OSError, WindowsError) as error:
+
+        except OSException as error:
             raise PermissionError(error)
 
         # Handle collections.
