@@ -19,7 +19,7 @@ except NameError as e:
     _OSException = OSError
 
 
-class PermissionError(Exception):
+class ModelError(Exception):
     pass
 
 
@@ -212,7 +212,7 @@ class Directory(Item):
                 paths.append(os.path.normpath(os.path.join(self.path, name)))
 
         except _OSException as error:
-            raise PermissionError(error)
+            raise ModelError(error)
 
         # Handle collections.
         collections, remainder = clique.assemble(
@@ -295,7 +295,7 @@ class Collection(Item):
 
 class Filesystem(QAbstractItemModel):
     '''Model representing filesystem.'''
-    permission_error = QtCore.Signal(object)
+    model_error = QtCore.Signal(object)
     ITEM_ROLE = Qt.UserRole + 1
 
     def __init__(self, path='', parent=None, iconFactory=None):
@@ -498,8 +498,8 @@ class Filesystem(QAbstractItemModel):
             startIndex = len(item.children)
             try:
                 additionalChildren = item.fetchChildren()
-            except PermissionError as error:
-                self.permission_error.emit(error)
+            except ModelError as error:
+                self.model_error.emit(error)
                 additionalChildren = []
 
             endIndex = startIndex + len(additionalChildren) - 1
