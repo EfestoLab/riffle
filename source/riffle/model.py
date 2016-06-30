@@ -499,8 +499,8 @@ class Filesystem(QAbstractItemModel):
             try:
                 additionalChildren = item.fetchChildren()
             except ModelError as error:
-                self.model_error.emit(error)
-                additionalChildren = []
+                self.model_error.emit((error, item.parent))
+                return
 
             endIndex = startIndex + len(additionalChildren) - 1
             if endIndex >= startIndex:

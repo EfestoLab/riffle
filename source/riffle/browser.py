@@ -89,13 +89,16 @@ class FilesystemBrowser(QtGui.QDialog):
 
         self.layout().addLayout(self._footerLayout)
 
-    def on_model_error(self, error):
+    def on_model_error(self, data):
+        error, item = data
         self.messagebox = QtGui.QMessageBox().warning(
             self,
-            "Permission problems",
+            "Error",
             str(error),
             QtGui.QMessageBox.Cancel
         )
+        self.setLocation(item.path)
+
 
     def _postConstruction(self):
         '''Perform post-construction operations.'''
