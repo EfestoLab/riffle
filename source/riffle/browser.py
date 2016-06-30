@@ -91,14 +91,14 @@ class FilesystemBrowser(QtGui.QDialog):
 
     def on_model_error(self, data):
         error, item = data
-        self.messagebox = QtGui.QMessageBox().warning(
-            self,
-            "Error",
-            str(error),
-            QtGui.QMessageBox.Cancel
-        )
         self.setLocation(item.path)
-
+        #
+        # self.messagebox = QtGui.QMessageBox().warning(
+        #     self,
+        #     "Error",
+        #     str(error),
+        #     QtGui.QMessageBox.Cancel
+        # )
 
     def _postConstruction(self):
         '''Perform post-construction operations.'''
